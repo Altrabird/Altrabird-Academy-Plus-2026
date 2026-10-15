@@ -1,0 +1,269 @@
+/* ==========================================================================
+   themes.css — design tokens for Science Classroom
+   Two independent axes:
+     [data-scheme] = dark | light   -> surfaces + text
+     [data-theme]  = lab | ocean | forest | space | sunrise -> accent family
+   Extra flags: [data-contrast="high"], [data-textsize="lg"|"xl"]
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* --- accent family (overridden per theme below) --- */
+  --accent: #14b8a6;
+  --accent-strong: #0d9488;
+  --accent-soft: rgba(20, 184, 166, 0.16);
+  --accent-contrast: #04211d;
+  --tint-hue: 172;
+
+  /* --- surfaces (dark default) --- */
+  --bg: #0b1220;
+  --bg-glow: radial-gradient(1200px 700px at 82% -12%, hsl(var(--tint-hue) 62% 22% / .55), transparent 62%),
+             radial-gradient(900px 620px at 6% 108%, hsl(var(--tint-hue) 48% 18% / .45), transparent 60%);
+  --surface: #131c2e;
+  --surface-2: #1a2540;
+  --surface-3: #223055;
+  --text: #f2f6fb;
+  --muted: #9fb0c9;
+  --border: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.20);
+  --shadow: 0 18px 40px -22px rgba(2, 6, 20, 0.95);
+  --shadow-lift: 0 26px 60px -26px rgba(2, 6, 20, 1);
+
+  /* --- semantic --- */
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.14);
+
+  /* --- shape & rhythm --- */
+  --radius: 22px;
+  --radius-sm: 12px;
+  --radius-pill: 999px;
+  --gap: 18px;
+  --pad: 20px;
+
+  /* --- type --- */
+  --font: "Segoe UI", system-ui, -apple-system, "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Semibold", "Segoe UI", system-ui, "Inter", Arial, sans-serif;
+  --font-num: "Segoe UI Variable Display", "Segoe UI", system-ui, "Inter", Arial, sans-serif;
+  --text-scale: 1;
+
+  /* --- motion (zeroed by reduce-motion) --- */
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 380ms;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+/* ---------- light scheme ---------- */
+[data-scheme="light"] {
+  color-scheme: light;
+  --bg: #eef2f8;
+  --bg-glow: radial-gradient(1100px 640px at 84% -14%, hsl(var(--tint-hue) 70% 82% / .75), transparent 60%),
+             radial-gradient(880px 560px at 4% 106%, hsl(var(--tint-hue) 60% 86% / .7), transparent 62%);
+  --surface: #ffffff;
+  --surface-2: #f4f7fc;
+  --surface-3: #e6ecf6;
+  --text: #0f1729;
+  --muted: #5a6b85;
+  --border: rgba(15, 23, 41, 0.10);
+  --border-strong: rgba(15, 23, 41, 0.22);
+  --shadow: 0 16px 34px -24px rgba(15, 23, 41, 0.55);
+  --shadow-lift: 0 24px 54px -28px rgba(15, 23, 41, 0.5);
+  --accent-contrast: #ffffff;
+  --danger-soft: rgba(220, 38, 38, 0.10);
+  --danger: #dc2626;
+  --ok: #059669;
+  --warn: #b45309;
+}
+
+/* ---------- accent families ---------- */
+[data-theme="lab"]     { --accent:#14b8a6; --accent-strong:#0d9488; --accent-soft:rgba(20,184,166,.16); --tint-hue:172; }
+[data-theme="ocean"]   { --accent:#38bdf8; --accent-strong:#0284c7; --accent-soft:rgba(56,189,248,.16); --tint-hue:199; }
+[data-theme="forest"]  { --accent:#84cc16; --accent-strong:#4d7c0f; --accent-soft:rgba(132,204,22,.18); --tint-hue:85;  }
+[data-theme="space"]   { --accent:#a78bfa; --accent-strong:#7c3aed; --accent-soft:rgba(167,139,250,.18); --tint-hue:258; }
+[data-theme="sunrise"] { --accent:#fb923c; --accent-strong:#ea580c; --accent-soft:rgba(251,146,60,.18); --tint-hue:26;  }
+
+[data-scheme="dark"][data-theme="lab"],
+[data-scheme="dark"][data-theme="forest"],
+[data-scheme="dark"][data-theme="sunrise"] { --accent-contrast:#06180f; }
+[data-scheme="dark"][data-theme="ocean"] { --accent-contrast:#04202f; }
+[data-scheme="dark"][data-theme="space"] { --accent-contrast:#170a35; }
+
+/* ---------- high contrast ---------- */
+[data-contrast="high"] {
+  --border: currentColor;
+  --border-strong: currentColor;
+  --muted: var(--text);
+  --shadow: none;
+  --shadow-lift: none;
+}
+[data-contrast="high"][data-scheme="dark"] { --bg:#000; --surface:#0a0a0a; --surface-2:#141414; --surface-3:#1f1f1f; --text:#fff; --bg-glow:none; }
+[data-contrast="high"][data-scheme="light"] { --bg:#fff; --surface:#fff; --surface-2:#f2f2f2; --surface-3:#e4e4e4; --text:#000; --bg-glow:none; }
+
+/* ---------- text size ---------- */
+[data-textsize="lg"] { --text-scale: 1.12; }
+[data-textsize="xl"] { --text-scale: 1.26; }
+
+/* ---------- reduced motion ---------- */
+[data-motion="reduced"] { --dur-fast: 0ms; --dur: 0ms; --dur-slow: 0ms; }
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur: 0ms; --dur-slow: 0ms; }
+}
+
+/* ==========================================================================
+   "Mecha" theme — a hangar-panel look: near-black deck, chamfered armour
+   panels, thin bright edges, technical labels and monospace numerals.
+   It is a theme, not a rewrite: the same tokens, the same contrast rules, and
+   every readability floor from the projector work still applies.
+   ========================================================================== */
+
+[data-theme="mecha"] {
+  --accent: #38e1ff;
+  --accent-strong: #0aa5c9;
+  --accent-soft: rgba(56, 225, 255, .14);
+  --accent-contrast: #041019;
+  --tint-hue: 192;
+
+  --alert: #ff4d4d;          /* the red of a hangar warning stripe */
+  --signal: #ffcc33;         /* and its yellow */
+}
+
+[data-scheme="dark"][data-theme="mecha"] {
+  --bg: #05080f;
+  --bg-glow:
+    radial-gradient(1100px 620px at 78% -14%, rgba(56, 225, 255, .14), transparent 62%),
+    radial-gradient(900px 560px at 4% 108%, rgba(255, 204, 51, .07), transparent 60%);
+  --surface: #0b1220;
+  --surface-2: #101a2c;
+  --surface-3: #17253d;
+  --text: #eaf4ff;
+  --muted: #8fa6c4;
+  --border: rgba(56, 225, 255, .16);
+  --border-strong: rgba(56, 225, 255, .38);
+  --shadow: 0 16px 34px -22px rgba(0, 0, 0, .9);
+  --shadow-lift: 0 24px 56px -26px rgba(0, 0, 0, 1);
+  --warn: var(--signal);
+  --danger: var(--alert);
+}
+
+[data-scheme="light"][data-theme="mecha"] {
+  --bg: #e8eef6;
+  --surface: #ffffff;
+  --surface-2: #f1f5fb;
+  --surface-3: #e2eaf4;
+  --text: #08111d;
+  --muted: #46586f;
+  --border: rgba(8, 17, 29, .14);
+  --border-strong: rgba(8, 17, 29, .3);
+  --accent: #0b7f9e;
+  --accent-strong: #085d74;
+  --accent-contrast: #ffffff;
+}
+
+/* ---------- armour panels: chamfered corners, hard edges ---------- */
+[data-theme="mecha"] {
+  --radius: 4px;
+  --radius-sm: 3px;
+  --font-display: "Segoe UI Semibold", "Segoe UI", system-ui, "Inter", Arial, sans-serif;
+  --font-num: ui-monospace, "Cascadia Mono", Consolas, "Segoe UI Mono", "Roboto Mono", monospace;
+}
+
+[data-theme="mecha"] .widget {
+  border-color: var(--border-strong);
+  /* the cut corner that makes a panel read as armour rather than a card */
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+[data-theme="mecha"] .widget-header {
+  background: linear-gradient(180deg, var(--surface-3), var(--surface-2));
+  border-bottom: 1px solid var(--border-strong);
+}
+[data-theme="mecha"] .widget-title {
+  font-family: var(--font-num);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-size: .78rem;
+}
+/* a thin status rail along the top edge of every panel */
+[data-theme="mecha"] .widget-header::before {
+  content: '';
+  position: absolute; inset-block-start: 0; inset-inline-start: 0;
+  width: 42px; height: 3px; background: var(--accent);
+}
+[data-theme="mecha"] .widget-header { position: relative; }
+
+/* ---------- chrome ---------- */
+[data-theme="mecha"] .topbar,
+[data-theme="mecha"] .launcher {
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border-color: var(--border-strong);
+}
+[data-theme="mecha"] .brand__name,
+[data-theme="mecha"] .launcher__title,
+[data-theme="mecha"] .classpicker__label {
+  font-family: var(--font-num);
+  text-transform: uppercase;
+  letter-spacing: .16em;
+}
+[data-theme="mecha"] .btn,
+[data-theme="mecha"] .tile,
+[data-theme="mecha"] .chip-btn,
+[data-theme="mecha"] .classpicker,
+[data-theme="mecha"] .classpicker__select,
+[data-theme="mecha"] .screenbar,
+[data-theme="mecha"] .screenbar__name,
+[data-theme="mecha"] .segmented__opt,
+[data-theme="mecha"] .corner-exit,
+[data-theme="mecha"] .toast {
+  border-radius: 3px;
+}
+[data-theme="mecha"] .tile,
+[data-theme="mecha"] .btn--ghost {
+  border-color: var(--border-strong);
+}
+[data-theme="mecha"] .tile.is-active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+[data-theme="mecha"] .btn:not(.btn--ghost):not(.btn--danger) {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+/* ---------- readouts ---------- */
+[data-theme="mecha"] .w-timer__time,
+[data-theme="mecha"] .w-clock__time,
+[data-theme="mecha"] .topclock {
+  font-family: var(--font-num);
+  letter-spacing: 0;
+}
+[data-theme="mecha"] .w-timer__status,
+[data-theme="mecha"] .w-noise__word,
+[data-theme="mecha"] .w-pick__winner-label {
+  font-family: var(--font-num);
+  letter-spacing: .18em;
+}
+[data-theme="mecha"] .w-timer__bar,
+[data-theme="mecha"] .w-noise__bar { border-radius: 2px; }
+[data-theme="mecha"] .w-timer__bar-fill,
+[data-theme="mecha"] .w-noise__fill { border-radius: 1px; }
+
+/* a restrained glow on the live numbers only — never on body text */
+[data-scheme="dark"][data-theme="mecha"] .w-timer__time,
+[data-scheme="dark"][data-theme="mecha"] .w-clock__time {
+  text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+[data-perf="low"][data-theme="mecha"] .w-timer__time,
+[data-perf="low"][data-theme="mecha"] .w-clock__time { text-shadow: none; }
+[data-perf="low"][data-theme="mecha"] .widget { clip-path: none; }
+
+/* ---------- the board itself ---------- */
+[data-theme="mecha"] .canvas {
+  outline-color: var(--border-strong);
+}
+[data-theme="mecha"] .canvas[data-wallpaper="none"]::before {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(56, 225, 255, .05) 0 1px, transparent 1px 72px),
+    repeating-linear-gradient(90deg, rgba(56, 225, 255, .05) 0 1px, transparent 1px 72px);
+}
+[data-perf="low"][data-theme="mecha"] .canvas[data-wallpaper="none"]::before { background-image: none; }
