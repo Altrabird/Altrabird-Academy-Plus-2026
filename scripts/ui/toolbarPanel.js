@@ -19,7 +19,7 @@ const MAX_IN_BAR = 12;
  * @param {{ manager: object, onChange: Function }} options
  */
 export function openToolCatalogue({ manager, onChange }) {
-  const inBar = el('div', { class: 'tools__grid' });
+  const inBar = el('div', { class: 'tools__grid tools__grid--bar' });
   const others = el('div', { class: 'tools__grid' });
   const barHint = el('p', { class: 'field__hint' });
 
@@ -34,10 +34,17 @@ export function openToolCatalogue({ manager, onChange }) {
     render();
   }
 
+  /** A tool: icon over its name. A small round badge pins it into the bar. */
   function card(definition, { pinned }) {
     const position = barIds().indexOf(definition.id);
 
-    return el('div', { class: `toolcard${pinned ? ' is-pinned' : ''}` }, [
+    const move = (delta) => {
+      const ids = barIds().slice();
+      [ids[position + delta], ids[position]] = [ids[position], ids[position + delta]];
+      setBar(ids);
+    };
+
+    return el('div', { class: `toolcard${pinned ? ' is-pinned' : ''}`, dataset: { tool: definition.id } }, [
       el('button', {
         type: 'button', class: 'toolcard__add',
         'aria-label': `Add ${definition.title} to the board`,
@@ -54,45 +61,38 @@ export function openToolCatalogue({ manager, onChange }) {
         }),
         el('span', { class: 'toolcard__name', text: definition.shortTitle || definition.title }),
       ]),
-      el('div', { class: 'toolcard__tools' }, [
-        pinned ? el('button', {
-          type: 'button', class: 'iconbtn', text: '‹',
+      el('button', {
+        type: 'button', class: 'toolcard__pin',
+        'aria-pressed': String(pinned),
+        'aria-label': pinned ? `Take ${definition.title} out of the bar` : `Put ${definition.title} in the bar`,
+        title: pinned ? 'In the toolbar — click to take it out' : 'Put in the toolbar',
+        html: icon(pinned ? 'check' : 'plus', 14),
+        onClick: () => {
+          const ids = barIds().filter((id) => id !== definition.id);
+          if (!pinned) {
+            if (barIds().length >= MAX_IN_BAR) {
+              toast(`The bar holds ${MAX_IN_BAR} tools — take one out first`);
+              return;
+            }
+            ids.push(definition.id);
+          }
+          setBar(ids);
+        },
+      }),
+      pinned ? el('div', { class: 'toolcard__tools' }, [
+        el('button', {
+          type: 'button', class: 'toolcard__move', text: '‹',
           'aria-label': `Move ${definition.title} earlier in the bar`,
           disabled: position <= 0,
-          onClick: () => {
-            const ids = barIds().slice();
-            [ids[position - 1], ids[position]] = [ids[position], ids[position - 1]];
-            setBar(ids);
-          },
-        }) : null,
-        pinned ? el('button', {
-          type: 'button', class: 'iconbtn', text: '›',
+          onClick: () => move(-1),
+        }),
+        el('button', {
+          type: 'button', class: 'toolcard__move', text: '›',
           'aria-label': `Move ${definition.title} later in the bar`,
           disabled: position === barIds().length - 1,
-          onClick: () => {
-            const ids = barIds().slice();
-            [ids[position + 1], ids[position]] = [ids[position], ids[position + 1]];
-            setBar(ids);
-          },
-        }) : null,
-        el('button', {
-          type: 'button', class: 'toolcard__pin',
-          'aria-pressed': String(pinned),
-          'aria-label': pinned ? `Take ${definition.title} out of the bar` : `Put ${definition.title} in the bar`,
-          text: pinned ? 'In bar' : '+ Bar',
-          onClick: () => {
-            const ids = barIds().filter((id) => id !== definition.id);
-            if (!pinned) {
-              if (barIds().length >= MAX_IN_BAR) {
-                toast(`The bar holds ${MAX_IN_BAR} tools — take one out first`);
-                return;
-              }
-              ids.push(definition.id);
-            }
-            setBar(ids);
-          },
+          onClick: () => move(1),
         }),
-      ]),
+      ]) : null,
     ]);
   }
 
@@ -104,7 +104,7 @@ export function openToolCatalogue({ manager, onChange }) {
 
     inBar.replaceChildren(...pinned.map((definition) => card(definition, { pinned: true })));
     others.replaceChildren(...rest.map((definition) => card(definition, { pinned: false })));
-    barHint.textContent = `${pinned.length} of ${MAX_IN_BAR} places used. Click a tool to add it to the board.`;
+    barHint.textContent = `${pinned.length} of ${MAX_IN_BAR} places used · click a tool to add it to the board · ✓ takes it out of the toolbar, + puts it in`;
   }
 
   render();
@@ -116,7 +116,7 @@ export function openToolCatalogue({ manager, onChange }) {
       el('h3', { class: 'tools__heading', text: 'In the toolbar' }),
       barHint,
       inBar,
-      el('h3', { class: 'tools__heading', text: 'Everything else' }),
+      el('h3', { class: 'tools__heading', text: 'More tools' }),
       others,
     ],
     actions: [
